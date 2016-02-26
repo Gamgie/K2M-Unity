@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityOSC;
 
-public class K2M : MonoBehaviour
+public class K2MClient : MonoBehaviour
 {
     public GameObject bodyPrefab;
 
@@ -21,6 +21,7 @@ public class K2M : MonoBehaviour
     void packetReceived(OSCPacket p)
     {
         OSCMessage m = (OSCMessage)p;
+        //Debug.Log("Message received " + m.Address);
 
         if(m.Address == "/k2m/body/entered")
         {
@@ -33,6 +34,7 @@ public class K2M : MonoBehaviour
 
         }else if(m.Address == "/k2m/joint")
         {
+            //Debug.Log(m.Data.Count + " arguments");
             updatejoint((int)m.Data[0], (int)m.Data[1], new Vector3((float)m.Data[2], (float)m.Data[3], (float)m.Data[4]));
         }
     }
@@ -57,8 +59,14 @@ public class K2M : MonoBehaviour
 
     void updatejoint(int trackingId, int jointIndex, Vector3 pos)
     {
+        if (!_Bodies.ContainsKey(trackingId)) addBody(trackingId);
 
         K2MBody b = _Bodies[trackingId];
         b.updateJoint(jointIndex,pos);
+    }
+
+    void OnDestroy()
+    {
+        server.Close();
     }
 }

@@ -7,11 +7,13 @@ public class K2MBody : MonoBehaviour {
     public GameObject jointPrefab;
     public GameObject bonePrefab;
 
-    [Range(.1f, 10f)]
+    [Range(.01f, 10f)]
     public float jointScale = 1;
 
-    [Range(.1f,10f)]
+    [Range(.01f,10f)]
     public float boneScale = 1;
+    [Range(.01f, 10f)]
+    public float boneWidth = 1;
 
     public bool boneIsCentered;
 
@@ -22,9 +24,7 @@ public class K2MBody : MonoBehaviour {
 
     [HideInInspector]
     public int numJoints = 25;
-    [HideInInspector]
-    public int numBones = 24;
-
+   
     public enum JointType : int
     {
         SpineBase = 0,
@@ -54,6 +54,9 @@ public class K2MBody : MonoBehaviour {
         ThumbRight = 24,
     }
 
+    [HideInInspector]
+    public int numBones = 20;
+
     private Dictionary<JointType, JointType> boneMap = new Dictionary<JointType, JointType>()
     {
         { JointType.FootLeft, JointType.AnkleLeft },
@@ -66,15 +69,17 @@ public class K2MBody : MonoBehaviour {
         { JointType.KneeRight, JointType.HipRight },
         { JointType.HipRight, JointType.SpineBase },
 
-        { JointType.HandTipLeft, JointType.HandLeft },
-        { JointType.ThumbLeft, JointType.HandLeft },
+        
+        //{ JointType.HandTipLeft, JointType.HandLeft },
+        //{ JointType.ThumbLeft, JointType.HandLeft },
         { JointType.HandLeft, JointType.WristLeft },
         { JointType.WristLeft, JointType.ElbowLeft },
         { JointType.ElbowLeft, JointType.ShoulderLeft },
         { JointType.ShoulderLeft, JointType.SpineShoulder },
+        
 
-        { JointType.HandTipRight, JointType.HandRight },
-        { JointType.ThumbRight, JointType.HandRight },
+        //{ JointType.HandTipRight, JointType.HandRight },
+        //{ JointType.ThumbRight, JointType.HandRight },
         { JointType.HandRight, JointType.WristRight },
         { JointType.WristRight, JointType.ElbowRight },
         { JointType.ElbowRight, JointType.ShoulderRight },
@@ -134,10 +139,12 @@ public class K2MBody : MonoBehaviour {
         }
 
 
-        for (int i = 0; i < numBones; i++)
+        for (int i = 0; i < numJoints; i++)
         {
 
             JointType t1 = (JointType)(i + 1); //start after spineBase
+
+            if (!boneMap.ContainsKey(t1)) continue;
             JointType t2 = boneMap[t1];
 
             Transform jt1 = joints[(int)t1];
@@ -157,7 +164,7 @@ public class K2MBody : MonoBehaviour {
             bone.LookAt(jt1);
 
             float dist = Vector3.Distance(jt1.position, jt2.position);
-            bone.localScale = new Vector3(boneScale, boneScale, dist* boneScale);
+            bone.localScale = new Vector3(boneScale*boneWidth, boneScale*boneWidth, dist* boneScale);
         }
     }
 }
